@@ -6,9 +6,18 @@ public class QuizQuestion {
 
     private String answer;
 
-    public void setQuestion(String question, String answer) {
+    //Необходим для работы MappingIterator
+    public QuizQuestion() {
+
+    }
+
+    public QuizQuestion(String question, String answer) {
         this.question = question;
         this.answer = answer;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
     }
 
     public String getQuestion() {

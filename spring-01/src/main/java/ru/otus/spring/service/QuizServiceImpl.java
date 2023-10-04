@@ -20,4 +20,5 @@ public class QuizServiceImpl implements QuizService {
             System.out.println(question.getQuestion());
         }
     }
+
 }
