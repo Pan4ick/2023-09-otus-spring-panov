@@ -11,23 +11,23 @@ class QuizQuestionTest {
 
     @Test
     void shouldHaveCorrectConstructor() {
-        QuizQuestion quizQuestion = new QuizQuestion(QUESTION, ANSWER);
-        assertEquals(QUESTION, quizQuestion.getQuestion());
-        assertEquals(ANSWER, quizQuestion.getAnswer());
+        Answer quizQuestion = new Answer(QUESTION, ANSWER);
+        assertEquals(QUESTION, quizQuestion.getTest());
+        assertEquals(ANSWER, quizQuestion.getRightAnswer());
     }
 
     @Test
     void setQuestion() {
-        QuizQuestion quizQuestion = new QuizQuestion();
-        quizQuestion.setQuestion(QUESTION);
-        assertEquals(QUESTION, quizQuestion.getQuestion());
+        Answer quizQuestion = new Answer();
+        quizQuestion.setTest(QUESTION);
+        assertEquals(QUESTION, quizQuestion.getTest());
     }
 
     @Test
     void setAnswer() {
-        QuizQuestion quizQuestion = new QuizQuestion();
-        quizQuestion.setAnswer(ANSWER);
-        assertEquals(ANSWER, quizQuestion.getAnswer());
+        Answer quizQuestion = new Answer();
+        quizQuestion.setRightAnswer(ANSWER);
+        assertEquals(ANSWER, quizQuestion.getRightAnswer());
     }
 
 }
