@@ -20,7 +20,7 @@ public class CsvQuizQuestionDao implements QuizDao {
     }
 
     @Override
-    public List<Answer> getQuestions() throws CsvConvertException {
+    public List<Answer> getQuestions() {
         CsvMapper csvMapper = new CsvMapper();
         try (InputStream csvStream = new ClassPathResource(csvFileName).getInputStream()) {
             CsvSchema schema = csvMapper.schema().withHeader();
@@ -29,7 +29,7 @@ public class CsvQuizQuestionDao implements QuizDao {
                     .readValues(csvStream);
             return questionMappingIterator.readAll();
         } catch (IOException ex) {
-            throw new CsvConvertException(ex.getMessage());
+            throw new CsvConvertException(ex.getMessage(), ex);
         }
     }
 

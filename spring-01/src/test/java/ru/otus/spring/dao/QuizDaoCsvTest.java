@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class QuizDaoCsvTest {
 
     @Test
-    void shouldGetQuestions() throws CsvConvertException {
+    void shouldGetQuestions() {
         QuizDao quizDao = new CsvQuizQuestionDao("quiz.csv");
         List<Answer> quizQuestions = quizDao.getQuestions();
         assertThat(quizQuestions)
