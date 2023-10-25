@@ -8,6 +8,7 @@ import java.util.List;
 public class QuizServiceImpl implements QuizService {
 
     private final QuizDao dao;
+
     private final IOService ioService;
 
     public QuizServiceImpl(QuizDao dao, IOService ioService) {
