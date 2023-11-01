@@ -1,11 +1,11 @@
 package ru.otus.spring.dao;
 
-import ru.otus.spring.domian.Answer;
+import ru.otus.spring.domian.Question;
 
 import java.util.List;
 
 public interface QuizDao {
 
-    public List<Answer> getQuestions();
+    public List<Question> getQuestions();
 
 }

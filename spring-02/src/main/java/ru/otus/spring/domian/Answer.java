@@ -1,35 +1,14 @@
 package ru.otus.spring.domian;
 
-public class Answer {
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-    private String test;
+public record Answer(String text, LocalDateTime answersTime) {
 
-    private String rightAnswer;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
-    //Необходим для работы MappingIterator
-    public Answer() {
-
-    }
-
-    public Answer(String test, String rightAnswer) {
-        this.test = test;
-        this.rightAnswer = rightAnswer;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public String getRightAnswer() {
-        return rightAnswer;
-    }
-
-    public void setRightAnswer(String rightAnswer) {
-        this.rightAnswer = rightAnswer;
+    public String getFormattedAnswersTime() {
+        return answersTime.format(DATE_TIME_FORMATTER);
     }
 
 }
