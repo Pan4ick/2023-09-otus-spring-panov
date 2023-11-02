@@ -9,10 +9,12 @@ import ru.otus.spring.domian.Student;
 
 import java.time.LocalDateTime;
 
+import static ru.otus.spring.helpers.StringsStorage.QUIZ_MESSAGE;
+import static ru.otus.spring.helpers.StringsStorage.MESSAGE_TO_ENTER;
+import static ru.otus.spring.helpers.StringsStorage.EMPTY_LINE;
+
 @Service
 public class QuizServiceImpl implements QuizService {
-
-    private static final String MESSAGE_TO_ENTER = "Enter your answer: ";
 
     private final QuizDao dao;
 
@@ -25,8 +27,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public QuizResult executeQuiz(Student student) {
-        ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
+        ioService.printFormattedLine(QUIZ_MESSAGE);
         var questions = dao.getQuestions();
         var quizResult = new QuizResult(student);
 
@@ -36,7 +37,7 @@ public class QuizServiceImpl implements QuizService {
                 String answerStr = ioService.readStringWithPrompt(MESSAGE_TO_ENTER);
                 Answer answer = new Answer(answerStr, LocalDateTime.now());
                 ioService.printLine(answer.getFormattedAnswersTime());
-                ioService.printLine("");
+                ioService.printLine(EMPTY_LINE);
                 quizResult.applyAnswer(question, answer);
             }
         }

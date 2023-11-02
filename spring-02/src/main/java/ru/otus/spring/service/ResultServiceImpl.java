@@ -5,6 +5,12 @@ import org.springframework.stereotype.Service;
 import ru.otus.spring.config.QuizConfig;
 import ru.otus.spring.domian.QuizResult;
 
+import static ru.otus.spring.helpers.StringsStorage.EMPTY_LINE;
+import static ru.otus.spring.helpers.StringsStorage.FAILED_TEST_OUTPUT;
+import static ru.otus.spring.helpers.StringsStorage.PASSED_TEST_OUTPUT;
+import static ru.otus.spring.helpers.StringsStorage.QUIZ_RESULTS_OUTPUT;
+import static ru.otus.spring.helpers.StringsStorage.STUDENT_OUTPUT;
+
 @RequiredArgsConstructor
 @Service
 public class ResultServiceImpl implements ResultService {
@@ -15,15 +21,15 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public void showResult(QuizResult quizResult) {
-        ioService.printLine("");
-        ioService.printFormattedLine("Student: %s", quizResult.getStudent().getFullName());
-        ioService.printFormattedLine("Test results: %d/%d, need: %d", quizResult.getRightAnswersCount(),
+        ioService.printLine(EMPTY_LINE);
+        ioService.printFormattedLine(STUDENT_OUTPUT, quizResult.getStudent().getFullName());
+        ioService.printFormattedLine(QUIZ_RESULTS_OUTPUT, quizResult.getRightAnswersCount(),
                 quizResult.getQuestionsCount(), quizConfig.getRightAnswersCountToPass());
 
         if (quizResult.getRightAnswersCount() >= quizConfig.getRightAnswersCountToPass()) {
-            ioService.printLine("Congratulations! You passed test!");
+            ioService.printLine(PASSED_TEST_OUTPUT);
             return;
         }
-        ioService.printLine("Sorry. You fail test.");
+        ioService.printLine(FAILED_TEST_OUTPUT);
     }
 }
