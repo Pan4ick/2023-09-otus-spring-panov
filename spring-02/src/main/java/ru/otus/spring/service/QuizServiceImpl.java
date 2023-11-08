@@ -31,16 +31,15 @@ public class QuizServiceImpl implements QuizService {
         var questions = dao.getQuestions();
         var quizResult = new QuizResult(student);
 
-        if (questions != null) {
-            for (Question question : questions) {
-                ioService.printLine(question.text());
-                String answerStr = ioService.readStringWithPrompt(MESSAGE_TO_ENTER);
-                Answer answer = new Answer(answerStr, LocalDateTime.now());
-                ioService.printLine(answer.getFormattedAnswersTime());
-                ioService.printLine(EMPTY_LINE);
-                quizResult.applyAnswer(question, answer);
-            }
+        for (Question question : questions) {
+            ioService.printLine(question.text());
+            String answerStr = ioService.readStringWithPrompt(MESSAGE_TO_ENTER);
+            Answer answer = new Answer(answerStr, LocalDateTime.now());
+            ioService.printLine(answer.getFormattedAnswersTime());
+            ioService.printLine(EMPTY_LINE);
+            quizResult.applyAnswer(question, answer);
         }
+
         return quizResult;
     }
 
