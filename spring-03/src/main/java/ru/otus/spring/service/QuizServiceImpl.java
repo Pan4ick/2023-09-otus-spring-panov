@@ -9,32 +9,31 @@ import ru.otus.spring.domian.Student;
 
 import java.time.LocalDateTime;
 
-import static ru.otus.spring.helpers.StringsStorage.*;
 
 @Service
 public class QuizServiceImpl implements QuizService {
 
     private final QuizDao dao;
 
-    private final IOService ioService;
+    private final LocalizedIOService ioService;
 
-    public QuizServiceImpl(QuizDao dao, IOService ioService) {
+    public QuizServiceImpl(QuizDao dao, LocalizedIOService ioService) {
         this.dao = dao;
         this.ioService = ioService;
     }
 
     @Override
     public QuizResult executeQuiz(Student student) {
-        ioService.printFormattedLine(QUIZ_MESSAGE);
+        ioService.printFormattedLineLocalized("Quiz.service.quiz.message");
         var questions = dao.getQuestions();
         var quizResult = new QuizResult(student);
 
         for (Question question : questions) {
             ioService.printLine(question.text());
-            String answerStr = ioService.readStringWithPrompt(MESSAGE_TO_ENTER);
+            String answerStr = ioService.readStringWithPromptLocalized("Quiz.service.enter.message");
             Answer answer = new Answer(answerStr, LocalDateTime.now());
-            ioService.printLine(answer.getFormattedAnswersTime());
-            ioService.printLine(EMPTY_LINE);
+            ioService.printFormattedLine(answer.getFormattedAnswersTime());
+            ioService.printLine("");
             quizResult.applyAnswer(question, answer);
         }
 

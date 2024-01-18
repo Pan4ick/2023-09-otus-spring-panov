@@ -2,25 +2,24 @@ package ru.otus.spring.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.otus.spring.config.QuizConfig;
 import ru.otus.spring.domian.Student;
-
-import static ru.otus.spring.helpers.StringsStorage.*;
 
 @RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
 
-    private static final int MIN_AGE = 5;
+    private final QuizConfig quizConfig;
 
-    private static final int MAX_AGE = 110;
-
-    private final IOService ioService;
+    private final LocalizedIOService ioService;
 
     @Override
     public Student determineStudent() {
-        var firstName = ioService.readStringWithPrompt(FIRST_NAME_INPUT);
-        var lastName = ioService.readStringWithPrompt(SECOND_NAME_INPUT);
-        var age = ioService.readIntForRangeWithPrompt(MIN_AGE, MAX_AGE, AGE_INPUT, AGE_ERROR_MESSAGE);
+        var firstName = ioService.readStringWithPromptLocalized("Student.service.first.name.input");
+        var lastName = ioService.readStringWithPromptLocalized("Student.service.last.name.input");
+        var age = ioService.readIntForRangeWithPromptLocalized(quizConfig.getMinStudentsAge(),
+                quizConfig.getMaxStudentsAge(), "Student.service.age.input",
+                "Student.service.age.error");
         return new Student(firstName, lastName, age);
     }
 

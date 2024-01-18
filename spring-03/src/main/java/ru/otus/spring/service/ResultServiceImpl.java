@@ -5,27 +5,25 @@ import org.springframework.stereotype.Service;
 import ru.otus.spring.config.QuizConfig;
 import ru.otus.spring.domian.QuizResult;
 
-import static ru.otus.spring.helpers.StringsStorage.*;
-
 @RequiredArgsConstructor
 @Service
 public class ResultServiceImpl implements ResultService {
 
     private final QuizConfig quizConfig;
 
-    private final IOService ioService;
+    private final LocalizedIOService ioService;
 
     @Override
     public void showResult(QuizResult quizResult) {
-        ioService.printLine(EMPTY_LINE);
-        ioService.printFormattedLine(STUDENT_OUTPUT, quizResult.getStudent().getFullName());
-        ioService.printFormattedLine(QUIZ_RESULTS_OUTPUT, quizResult.getRightAnswersCount(),
+        ioService.printLine("");
+        ioService.printFormattedLineLocalized("Result.service.student.output", quizResult.getStudent().getFullName());
+        ioService.printFormattedLineLocalized("Result.service.quiz.results.output", quizResult.getRightAnswersCount(),
                 quizResult.getQuestionsCount(), quizConfig.getRightAnswersCountToPass());
 
         if (quizResult.getRightAnswersCount() >= quizConfig.getRightAnswersCountToPass()) {
-            ioService.printLine(PASSED_TEST_OUTPUT);
+            ioService.printLineLocalized("Result.service.passed.test.output");
             return;
         }
-        ioService.printLine(FAILED_TEST_OUTPUT);
+        ioService.printLineLocalized("Result.service.failed.test.output");
     }
 }
