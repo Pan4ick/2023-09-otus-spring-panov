@@ -1,0 +1,7 @@
+
+${AnsiColor.BRIGHT_WHITE}Spring Boot: ${spring-boot.version}
+${AnsiColor.BRIGHT_YELLOW}Application name: ${spring.application.name}
+${AnsiColor.BRIGHT_GREEN}Student's lastname: ${spring.application.student}
+
+${AnsiColor.WHITE}-------------------------------------------------------------------------------
+
