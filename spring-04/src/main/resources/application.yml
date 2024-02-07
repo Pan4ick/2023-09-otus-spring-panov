@@ -1,0 +1,16 @@
+spring:
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+  application:
+    name: Otus_Spring_Homework_3
+    student: Panov
+quiz:
+  rightAnswersCountToPass: 3
+  locale: en_US
+  maxStudentsAge: 110
+  mixStudentsAge: 5
+  fileNameByLocaleTag:
+    ru-RU: quiz_ru.csv
+    en-US: quiz.csv
