@@ -26,17 +26,17 @@ public class StreamsIOService implements IOService {
 
     @Override
     public void printLine(String s) {
-        printStream.println(s);
+        printStream.printf("%s %n", s);
     }
 
     @Override
     public void print(String s) {
-        printStream.print(s);
+        printStream.printf("%s ", s);
     }
 
     @Override
     public void printFormattedLine(String s, Object... args) {
-        printStream.printf(s + "%n", args);
+        printStream.printf(s + " %n", args);
     }
 
     @Override
