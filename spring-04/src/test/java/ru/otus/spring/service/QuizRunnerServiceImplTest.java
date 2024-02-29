@@ -1,11 +1,10 @@
 package ru.otus.spring.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.spring.domian.QuizResult;
 import ru.otus.spring.domian.Student;
 
@@ -13,19 +12,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class QuizRunnerServiceImplTest {
 
-    @Mock
+    @MockBean
     private QuizService quizService;
 
-    @Mock
+    @MockBean
     private StudentService studentService;
 
-    @Mock
+    @MockBean
     private ResultService resultService;
 
-    @InjectMocks
+    @Autowired
     private QuizRunnerServiceImpl quizRunnerService;
 
     @Test

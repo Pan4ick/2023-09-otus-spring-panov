@@ -1,6 +1,7 @@
 package ru.otus.spring.dao;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.otus.spring.config.QuizFileNameProvider;
 import ru.otus.spring.domian.Question;
 
@@ -8,6 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest
 class CsvQuizQuestionDaoTest {
 
     private final QuizFileNameProvider csvFileName = new QuizFileNameProvider() {
