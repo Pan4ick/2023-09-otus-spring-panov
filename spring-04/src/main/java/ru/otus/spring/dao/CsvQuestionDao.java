@@ -16,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
-public class CsvQuizQuestionDao implements QuizDao {
+public class CsvQuestionDao implements QuestionDao {
 
     private final QuizFileNameProvider csvFileName;
 

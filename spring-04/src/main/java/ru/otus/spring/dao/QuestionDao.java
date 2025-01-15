@@ -4,7 +4,7 @@ import ru.otus.spring.domian.Question;
 
 import java.util.List;
 
-public interface QuizDao {
+public interface QuestionDao {
 
     public List<Question> getQuestions();
 

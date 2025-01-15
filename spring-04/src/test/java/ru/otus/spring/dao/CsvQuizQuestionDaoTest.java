@@ -21,8 +21,8 @@ class CsvQuizQuestionDaoTest {
 
     @Test
     void shouldGetQuestionsAndAnswersFromFile() {
-        QuizDao quizDao = new CsvQuizQuestionDao(csvFileName);
-        List<Question> quizQuestions = quizDao.getQuestions();
+        QuestionDao questionDao = new CsvQuestionDao(csvFileName);
+        List<Question> quizQuestions = questionDao.getQuestions();
         assertThat(quizQuestions)
                 .hasSize(5)
                 .satisfiesExactly(input -> {

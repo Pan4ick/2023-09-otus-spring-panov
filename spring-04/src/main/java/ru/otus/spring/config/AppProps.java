@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "quiz")
-public class AppProps implements QuizConfig, QuizFileNameProvider, LocaleConfig {
+public class AppProps implements QuizConfig, QuizFileNameProvider, LocaleProvider {
 
     @Getter
     private final int rightAnswersCountToPass;

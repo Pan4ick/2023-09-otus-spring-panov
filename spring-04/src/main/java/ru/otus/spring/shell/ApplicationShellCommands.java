@@ -1,10 +1,13 @@
 package ru.otus.spring.shell;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
+import ru.otus.spring.config.AppProps;
 import ru.otus.spring.domian.QuizResult;
 import ru.otus.spring.domian.Student;
 import ru.otus.spring.service.LocalizedIOService;
@@ -14,6 +17,8 @@ import ru.otus.spring.service.ResultService;
 import ru.otus.spring.service.StudentService;
 
 @ShellComponent
+@Configuration
+@EnableConfigurationProperties(AppProps.class)
 @RequiredArgsConstructor
 public class ApplicationShellCommands {
 

@@ -1,7 +1,7 @@
 package ru.otus.spring.service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.spring.dao.QuizDao;
+import ru.otus.spring.dao.QuestionDao;
 import ru.otus.spring.domian.Answer;
 import ru.otus.spring.domian.Question;
 import ru.otus.spring.domian.QuizResult;
@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @Service
 public class QuizServiceImpl implements QuizService {
 
-    private final QuizDao dao;
+    private final QuestionDao dao;
 
     private final LocalizedIOService ioService;
 
-    public QuizServiceImpl(QuizDao dao, LocalizedIOService ioService) {
+    public QuizServiceImpl(QuestionDao dao, LocalizedIOService ioService) {
         this.dao = dao;
         this.ioService = ioService;
     }
