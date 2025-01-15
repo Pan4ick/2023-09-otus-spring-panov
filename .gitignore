@@ -17,5 +17,5 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 /spring-03/.mvn/
-/spring-03/mvnw.cmd
-/spring-03/mvnw
+mvnw.cmd
+mvnw
