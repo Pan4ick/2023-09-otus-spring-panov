@@ -3,18 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ru.otus</groupId>
+        <artifactId>spring</artifactId>
+        <version>1.0.1</version>
+    </parent>
 
-    <groupId>ru.otus</groupId>
-    <artifactId>spring</artifactId>
-    <version>1.0.1</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>spring-01</module>
-        <module>spring-02</module>
-        <module>spring-03</module>
-        <module>spring-04</module>
-        <module>spring-05</module>
-    </modules>
+    <groupId>org.example</groupId>
+    <artifactId>spring-05</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
