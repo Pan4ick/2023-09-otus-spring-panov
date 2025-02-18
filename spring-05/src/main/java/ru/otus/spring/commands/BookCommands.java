@@ -3,8 +3,8 @@ package ru.otus.hw.commands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.otus.hw.converters.BookConverter;
-import ru.otus.hw.services.BookService;
+import ru.otus.spring.converters.BookConverter;
+import ru.otus.spring.services.BookService;
 
 import java.util.Set;
 import java.util.stream.Collectors;

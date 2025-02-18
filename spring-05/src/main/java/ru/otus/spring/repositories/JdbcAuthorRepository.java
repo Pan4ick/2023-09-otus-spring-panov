@@ -1,6 +1,8 @@
 package ru.otus.spring.repositories;
 
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.models.Author;
 
@@ -12,6 +14,10 @@ import java.util.Optional;
 
 @Repository
 public class JdbcAuthorRepository implements AuthorRepository {
+
+    private final JdbcOperations jdbc;
+
+    private final NamedParameterJdbcOperations namedParameterJdbcOperations;
 
     @Override
     public List<Author> findAll() {

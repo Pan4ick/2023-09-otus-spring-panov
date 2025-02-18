@@ -1,10 +1,10 @@
-package ru.otus.hw.commands;
+package ru.otus.spring.commands;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.otus.hw.converters.GenreConverter;
-import ru.otus.hw.services.GenreService;
+import ru.otus.spring.converters.GenreConverter;
+import ru.otus.spring.services.GenreService;
 
 import java.util.stream.Collectors;
 
