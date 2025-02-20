@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.otus.spring.models.Author;
 import ru.otus.spring.models.Book;
 import ru.otus.spring.models.Genre;
 
@@ -20,6 +22,10 @@ import java.util.Optional;
 public class JdbcBookRepository implements BookRepository {
 
     private final GenreRepository genreRepository;
+
+    private final AuthorRepository authorRepository;
+
+    private final NamedParameterJdbcOperations namedParameterJdbcOperations;
 
     @Override
     public Optional<Book> findById(long id) {
@@ -49,6 +55,7 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private List<Book> getAllBooksWithoutGenres() {
+        namedParameterJdbcOperations.query("select id, title, author_id FROM books", new BookRowMapper());
         return new ArrayList<>();
     }
 
@@ -59,6 +66,7 @@ public class JdbcBookRepository implements BookRepository {
     private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
                                 List<BookGenreRelation> relations) {
         // Добавить книгам (booksWithoutGenres) жанры (genres) в соответствии со связями (relations)
+
     }
 
     private Book insert(Book book) {
@@ -94,7 +102,9 @@ public class JdbcBookRepository implements BookRepository {
 
         @Override
         public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return null;
+            Author author =
+            return new Book(rs.getLong("id"), rs.getString("title"),
+                    authorRepository, null);
         }
     }
 
