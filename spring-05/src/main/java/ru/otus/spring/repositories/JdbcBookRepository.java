@@ -13,9 +13,10 @@ import ru.otus.spring.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -55,18 +56,28 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private List<Book> getAllBooksWithoutGenres() {
-        namedParameterJdbcOperations.query("select id, title, author_id FROM books", new BookRowMapper());
-        return new ArrayList<>();
+        String sql = "SELECT b.id AS book_id, b.title AS book_title, a.id AS author_id, a.name AS author_name" +
+                "FROM books b JOIN authors a ON b.author_id = a.id";
+        return namedParameterJdbcOperations.query(sql, new BookRowMapper());
     }
 
     private List<BookGenreRelation> getAllGenreRelations() {
-        return new ArrayList<>();
+        String sql = "SELECT book_id, genre_id FROM book_genres";
+        return namedParameterJdbcOperations.query(sql, (rs, rowNum) ->
+                new BookGenreRelation(rs.getLong("book_id"), rs.getLong("genre_id")));
     }
 
     private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
                                 List<BookGenreRelation> relations) {
         // Добавить книгам (booksWithoutGenres) жанры (genres) в соответствии со связями (relations)
-
+        Map<Long, Book> books = booksWithoutGenres.stream().collect(Collectors.toMap(Book::getId, book -> book));
+        Map<Long, Genre> genresMap = genres.stream().collect(Collectors.toMap(Genre::getId, g -> g));
+        relations.forEach(relation -> {
+            Book book = books.get(relation.bookId);
+            Genre genre = genresMap.get(relation.genreId);
+            if (book != null && genre != null) {
+            book.addGenre(genre);
+        }});
     }
 
     private Book insert(Book book) {
@@ -102,9 +113,12 @@ public class JdbcBookRepository implements BookRepository {
 
         @Override
         public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Author author =
-            return new Book(rs.getLong("id"), rs.getString("title"),
-                    authorRepository, null);
+            Author author = new Author(
+                    rs.getLong("author_id"),
+                    rs.getString("author_name")
+            );
+            return new Book(rs.getLong("book_id"), rs.getString("book_title"),
+                    author, null);
         }
     }
 

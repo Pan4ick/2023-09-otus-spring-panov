@@ -17,4 +17,6 @@ public class Book {
     private Author author;
 
     private List<Genre> genres;
+
+    public void addGenre(Genre genre) {genres.add(genre);}
 }
