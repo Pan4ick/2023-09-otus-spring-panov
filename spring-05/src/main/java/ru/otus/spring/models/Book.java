@@ -18,5 +18,7 @@ public class Book {
 
     private List<Genre> genres;
 
-    public void addGenre(Genre genre) {genres.add(genre);}
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
 }

@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.otus.spring.exceptions.EntityNotFoundException;
 import ru.otus.spring.models.Author;
 import ru.otus.spring.models.Book;
 import ru.otus.spring.models.Genre;
@@ -28,9 +30,19 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        return Optional.empty();
-    }
+        String sql = "SELECT b.id AS book_id, b.title AS book_title, " +
+                "a.id AS author_id, a.name AS author_name, " +
+                "g.id AS genre_id, g.name AS genre_name " +
+                "FROM books b " +
+                "JOIN authors a ON b.author_id = a.id " +
+                "LEFT JOIN book_genres bg ON b.id = bg.book_id " +
+                "LEFT JOIN genres g ON bg.genre_id = g.id " +
+                "WHERE b.id = :id";
 
+        Map<String, Object> params = Collections.singletonMap("id", id);
+        Book book = namedParameterJdbcOperations.query(sql, params, new BookResultSetExtractor());
+        return Optional.ofNullable(book);
+    }
     @Override
     public List<Book> findAll() {
         var genres = genreRepository.findAll();
@@ -76,14 +88,18 @@ public class JdbcBookRepository implements BookRepository {
             Book book = books.get(relation.bookId);
             Genre genre = genresMap.get(relation.genreId);
             if (book != null && genre != null) {
-            book.addGenre(genre);
-        }});
+                book.addGenre(genre);
+            }
+        });
     }
 
     private Book insert(Book book) {
         var keyHolder = new GeneratedKeyHolder();
-
-        //...
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("title", book.getTitle())
+                .addValue("author_id", book.getAuthor().getId());
+        namedParameterJdbcOperations.update("INSERT INTO books (title, author_id) VALUES (:title, :author_id)",
+                params, keyHolder, new String[]{"id"});
 
         //noinspection DataFlowIssue
         book.setId(keyHolder.getKeyAs(Long.class));
@@ -92,9 +108,16 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private Book update(Book book) {
-        //...
-
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", book.getId())
+                .addValue("title", book.getTitle())
+                .addValue("author_id", book.getId());
+        int updatedRows = namedParameterJdbcOperations.update(
+                "UPDATE books SET title = :title, author_id = :author_id WHERE id = :id", params);
         // Выбросить EntityNotFoundException если не обновлено ни одной записи в БД
+        if (updatedRows == 0) {
+            throw new EntityNotFoundException("Book with id %d not found".formatted(book.getId()));
+        }
         removeGenresRelationsFor(book);
         batchInsertGenresRelationsFor(book);
 
@@ -103,6 +126,13 @@ public class JdbcBookRepository implements BookRepository {
 
     private void batchInsertGenresRelationsFor(Book book) {
         // Использовать метод batchUpdate
+        String sql = "INSERT INTO books_genres (book_id, genre_id) VALUES (:book_id, :genre_id)";
+        List<MapSqlParameterSource> batchParams = book.getGenres().stream()
+                .map(genre -> new MapSqlParameterSource()
+                        .addValue("book_id", book.getId())
+                        .addValue("genre_id", genre.getId()))
+                .toList();
+        namedParameterJdbcOperations.batchUpdate(sql, batchParams.toArray(new MapSqlParameterSource[0]));
     }
 
     private void removeGenresRelationsFor(Book book) {
@@ -130,7 +160,36 @@ public class JdbcBookRepository implements BookRepository {
 
         @Override
         public Book extractData(ResultSet rs) throws SQLException, DataAccessException {
-            return null;
+            if (!rs.next()) {
+                return null;
+            }
+
+            Book book = null;
+
+            while (rs.next()) {
+                // Создаем книгу, если она еще не создана
+                if (book == null) {
+                    book = new Book(
+                            rs.getLong("book_id"),
+                            rs.getString("book_title"),
+                            new Author(
+                                    rs.getLong("author_id"),
+                                    rs.getString("author_name")
+                            ),
+                            new ArrayList<>()
+                    );
+                }
+
+                // Добавляем жанр, если он есть
+                long genreId = rs.getLong("genre_id");
+                if (!rs.wasNull()) {
+                    book.getGenres().add(new Genre(
+                            genreId,
+                            rs.getString("genre_name")
+                    ));
+                }
+            }
+            return book;
         }
     }
 

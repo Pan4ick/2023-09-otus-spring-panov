@@ -31,11 +31,6 @@ public class JdbcGenreRepository implements GenreRepository {
                 params, new JdbcGenreRepository.GenreRowMapper());
     }
 
-    @Override
-    public List<Genre> findAllByBookId(long bookId) {
-        return null;
-    }
-
     private static class GenreRowMapper implements RowMapper<Genre> {
 
         @Override
