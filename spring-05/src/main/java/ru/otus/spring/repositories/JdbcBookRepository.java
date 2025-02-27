@@ -13,9 +13,7 @@ import ru.otus.spring.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -52,7 +50,9 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public void deleteById(long id) {
-        //...
+        removeGenresRelationsFor(new Book(id, null, null, null));
+        Map<String, Object> params = Collections.singletonMap("id", id);
+        namedParameterJdbcOperations.update("delete from books where id = :id", params);
     }
 
     private List<Book> getAllBooksWithoutGenres() {
@@ -106,7 +106,8 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private void removeGenresRelationsFor(Book book) {
-        //...
+        Map<String, Object> params = Collections.singletonMap("book_id", book.getId());
+        namedParameterJdbcOperations.update("DELETE FROM book_genres WHERE book_id = :book_id", params);
     }
 
     private static class BookRowMapper implements RowMapper<Book> {
