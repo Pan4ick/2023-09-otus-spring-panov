@@ -15,7 +15,11 @@ import ru.otus.spring.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -31,11 +35,11 @@ public class JdbcBookRepository implements BookRepository {
     @Override
     public Optional<Book> findById(long id) {
         String sql = "SELECT b.id AS book_id, b.title AS book_title, " +
-                "a.id AS author_id, a.name AS author_name, " +
+                "a.id AS author_id, a.full_name AS author_name, " +
                 "g.id AS genre_id, g.name AS genre_name " +
                 "FROM books b " +
                 "JOIN authors a ON b.author_id = a.id " +
-                "LEFT JOIN book_genres bg ON b.id = bg.book_id " +
+                "LEFT JOIN books_genres bg ON b.id = bg.book_id " +
                 "LEFT JOIN genres g ON bg.genre_id = g.id " +
                 "WHERE b.id = :id";
 
@@ -43,6 +47,7 @@ public class JdbcBookRepository implements BookRepository {
         Book book = namedParameterJdbcOperations.query(sql, params, new BookResultSetExtractor());
         return Optional.ofNullable(book);
     }
+
     @Override
     public List<Book> findAll() {
         var genres = genreRepository.findAll();
@@ -68,13 +73,13 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private List<Book> getAllBooksWithoutGenres() {
-        String sql = "SELECT b.id AS book_id, b.title AS book_title, a.id AS author_id, a.name AS author_name" +
+        String sql = "SELECT b.id AS book_id, b.title AS book_title, a.id AS author_id, a.full_name AS author_name " +
                 "FROM books b JOIN authors a ON b.author_id = a.id";
         return namedParameterJdbcOperations.query(sql, new BookRowMapper());
     }
 
     private List<BookGenreRelation> getAllGenreRelations() {
-        String sql = "SELECT book_id, genre_id FROM book_genres";
+        String sql = "SELECT book_id, genre_id FROM books_genres";
         return namedParameterJdbcOperations.query(sql, (rs, rowNum) ->
                 new BookGenreRelation(rs.getLong("book_id"), rs.getLong("genre_id")));
     }
@@ -82,14 +87,16 @@ public class JdbcBookRepository implements BookRepository {
     private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
                                 List<BookGenreRelation> relations) {
         // Добавить книгам (booksWithoutGenres) жанры (genres) в соответствии со связями (relations)
-        Map<Long, Book> books = booksWithoutGenres.stream().collect(Collectors.toMap(Book::getId, book -> book));
         Map<Long, Genre> genresMap = genres.stream().collect(Collectors.toMap(Genre::getId, g -> g));
-        relations.forEach(relation -> {
-            Book book = books.get(relation.bookId);
-            Genre genre = genresMap.get(relation.genreId);
-            if (book != null && genre != null) {
-                book.addGenre(genre);
-            }
+        Map<Long, List<Genre>> bookToGenresMap = relations.stream()
+                .collect(Collectors.groupingBy(BookGenreRelation::bookId, Collectors.mapping(
+                        relation -> genresMap.get(relation.genreId()),
+                        Collectors.toList())
+                ));
+
+        booksWithoutGenres.forEach(book -> {
+            List<Genre> bookGenres = bookToGenresMap.getOrDefault(book.getId(), Collections.emptyList());
+            book.setGenres(bookGenres);
         });
     }
 
@@ -111,7 +118,7 @@ public class JdbcBookRepository implements BookRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", book.getId())
                 .addValue("title", book.getTitle())
-                .addValue("author_id", book.getId());
+                .addValue("author_id", book.getAuthor().getId());
         int updatedRows = namedParameterJdbcOperations.update(
                 "UPDATE books SET title = :title, author_id = :author_id WHERE id = :id", params);
         // Выбросить EntityNotFoundException если не обновлено ни одной записи в БД
@@ -137,7 +144,7 @@ public class JdbcBookRepository implements BookRepository {
 
     private void removeGenresRelationsFor(Book book) {
         Map<String, Object> params = Collections.singletonMap("book_id", book.getId());
-        namedParameterJdbcOperations.update("DELETE FROM book_genres WHERE book_id = :book_id", params);
+        namedParameterJdbcOperations.update("DELETE FROM books_genres WHERE book_id = :book_id", params);
     }
 
     private static class BookRowMapper implements RowMapper<Book> {
@@ -160,14 +167,9 @@ public class JdbcBookRepository implements BookRepository {
 
         @Override
         public Book extractData(ResultSet rs) throws SQLException, DataAccessException {
-            if (!rs.next()) {
-                return null;
-            }
-
             Book book = null;
 
             while (rs.next()) {
-                // Создаем книгу, если она еще не создана
                 if (book == null) {
                     book = new Book(
                             rs.getLong("book_id"),
@@ -179,8 +181,6 @@ public class JdbcBookRepository implements BookRepository {
                             new ArrayList<>()
                     );
                 }
-
-                // Добавляем жанр, если он есть
                 long genreId = rs.getLong("genre_id");
                 if (!rs.wasNull()) {
                     book.getGenres().add(new Genre(
