@@ -66,9 +66,9 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     @Override
-    public void deleteById(long id) {
-        removeGenresRelationsFor(new Book(id, null, null, null));
-        Map<String, Object> params = Collections.singletonMap("id", id);
+    public void deleteById(long bookId) {
+        removeGenresRelationsFor(bookId);
+        Map<String, Object> params = Collections.singletonMap("id", bookId);
         namedParameterJdbcOperations.update("delete from books where id = :id", params);
     }
 
@@ -125,7 +125,7 @@ public class JdbcBookRepository implements BookRepository {
         if (updatedRows == 0) {
             throw new EntityNotFoundException("Book with id %d not found".formatted(book.getId()));
         }
-        removeGenresRelationsFor(book);
+        removeGenresRelationsFor(book.getId());
         batchInsertGenresRelationsFor(book);
 
         return book;
@@ -142,8 +142,8 @@ public class JdbcBookRepository implements BookRepository {
         namedParameterJdbcOperations.batchUpdate(sql, batchParams.toArray(new MapSqlParameterSource[0]));
     }
 
-    private void removeGenresRelationsFor(Book book) {
-        Map<String, Object> params = Collections.singletonMap("book_id", book.getId());
+    private void removeGenresRelationsFor(long bookId) {
+        Map<String, Object> params = Collections.singletonMap("book_id", bookId);
         namedParameterJdbcOperations.update("DELETE FROM books_genres WHERE book_id = :book_id", params);
     }
 
